@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -13,12 +13,13 @@ export class AppComponent {
     error:(err:any)=>console.error(err),
     complte:console.log("Completed")    
   }
-  subject=new BehaviorSubject("Hello");
+  subject=new ReplaySubject(2);
   constructor(){
-    const sub1=this.subject.subscribe(this.observer);
-    const sub2=this.subject.subscribe(this.observer);
-    this.subject.next("World");
-    const sub3=this.subject.subscribe(this.observer);
-    
+    this.subject.next("Hello1");
+    this.subject.next("Hello2");
+    this.subject.subscribe(this.observer);
+    this.subject.next("Hello3");
+    this.subject.subscribe(this.observer);
+
   }
 }
