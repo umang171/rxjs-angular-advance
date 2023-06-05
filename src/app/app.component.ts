@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Observable, Subject, interval, share, tap } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -13,15 +13,12 @@ export class AppComponent {
     error:(err:any)=>console.error(err),
     complte:console.log("Completed")    
   }
-
-  intervalObs=interval(1000).pipe(tap(val=>console.log("New value",val)));
+  subject=new BehaviorSubject("Hello");
   constructor(){
-    let multiCast=this.intervalObs.pipe(share());
-    const m1=multiCast.subscribe(this.observer);
-    const m2=multiCast.subscribe(this.observer);
-    setTimeout(()=>{
-      m1.unsubscribe();
-      m2.unsubscribe();
-    },5000);
+    const sub1=this.subject.subscribe(this.observer);
+    const sub2=this.subject.subscribe(this.observer);
+    this.subject.next("World");
+    const sub3=this.subject.subscribe(this.observer);
+    
   }
 }
