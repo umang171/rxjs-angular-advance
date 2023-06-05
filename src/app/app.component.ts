@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Observable, Subject, interval, tap } from 'rxjs';
+import { Observable, Subject, interval, share, tap } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -13,20 +13,15 @@ export class AppComponent {
     error:(err:any)=>console.error(err),
     complte:console.log("Completed")    
   }
-  subject=new Subject();
-  subject2=new Subject();
-  subscriber1=this.subject.subscribe(this.observer);
-  subscriber2=this.subject.subscribe(this.observer);
 
   intervalObs=interval(1000).pipe(tap(val=>console.log("New value",val)));
   constructor(){
-    // this.subject.next("Hello");
-    // this.intervalObs.subscribe(this.subject);
-    this.subject2.subscribe(isLogin=>isLogin?console.log("successfull login"):console.log("Logout"));
-    this.subject2.next(true);
-    setTimeout(() => {
-    this.subject2.next(false);
-      
-    }, 3000);
+    let multiCast=this.intervalObs.pipe(share());
+    const m1=multiCast.subscribe(this.observer);
+    const m2=multiCast.subscribe(this.observer);
+    setTimeout(()=>{
+      m1.unsubscribe();
+      m2.unsubscribe();
+    },5000);
   }
 }
