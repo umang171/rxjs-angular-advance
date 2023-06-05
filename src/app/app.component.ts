@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ReplaySubject, Subject, fromEvent, mergeMapTo, shareReplay } from 'rxjs';
+import { AsyncSubject} from 'rxjs';
 import {ajax} from 'rxjs/ajax'
 @Component({
   selector: 'app-root',
@@ -13,16 +13,14 @@ export class AppComponent {
     error:(err:any)=>console.error(err),
     complte:console.log("Completed")    
   }
-  subject=new Subject();
+  subject=new AsyncSubject();
   constructor(){
-    const ajax$=ajax("https://api.github.com/users/octocat");
-    const click=fromEvent(document,"click");
-    const clickReq=click.pipe(mergeMapTo(ajax$),shareReplay())
-    clickReq.subscribe(this.observer);
-    setTimeout(()=>{
-      console.log("subscribing..");
-      clickReq.subscribe(this.observer);
-    },3000);
+    this.subject.subscribe(this.observer);
+    this.subject.subscribe(this.observer);
+    this.subject.next("hello");
+    this.subject.next("hello1");
+    this.subject.next("hello2");
+    this.subject.complete();
   }
   
 }
