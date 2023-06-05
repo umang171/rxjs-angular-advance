@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { ReplaySubject } from 'rxjs';
-
+import { ReplaySubject, Subject, fromEvent, mergeMapTo, shareReplay } from 'rxjs';
+import {ajax} from 'rxjs/ajax'
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -13,13 +13,16 @@ export class AppComponent {
     error:(err:any)=>console.error(err),
     complte:console.log("Completed")    
   }
-  subject=new ReplaySubject(2);
+  subject=new Subject();
   constructor(){
-    this.subject.next("Hello1");
-    this.subject.next("Hello2");
-    this.subject.subscribe(this.observer);
-    this.subject.next("Hello3");
-    this.subject.subscribe(this.observer);
-
+    const ajax$=ajax("https://api.github.com/users/octocat");
+    const click=fromEvent(document,"click");
+    const clickReq=click.pipe(mergeMapTo(ajax$),shareReplay())
+    clickReq.subscribe(this.observer);
+    setTimeout(()=>{
+      console.log("subscribing..");
+      clickReq.subscribe(this.observer);
+    },3000);
   }
+  
 }
